@@ -1,15 +1,26 @@
-function Get-ScriptDirectory {
-    Split-Path -Parent $PSCommandPath
+try {
+    Import-Module LAPS -ErrorAction Stop
 }
-$scriptPath = Get-ScriptDirectory
-
-copy-item -path ($scriptpath + "\admpwd.ps") -destination "C:\Windows\System32\WindowsPowerShell\v1.0\Modules"
-get-childitem -path ($scriptpath + "\admpwd.ps") -recurse |Foreach-object {
-    Copy-item -literalpath $_.fullname -destination "C:\Windows\System32\WindowsPowerShell\v1.0\Modules\admpwd.ps"
+catch {
+    Write-Host -ForegroundColor Red "ERROR: The LAPS PowerShell module is not available."
+    throw "LAPS module not found. Cannot continue."
 }
-copy-item -path ($scriptpath + "\AdmPwd.admx") -destination "C:\Windows\PolicyDefinitions"
-copy-item -path ($scriptpath + "\AdmPwd.adml") -destination "C:\Windows\PolicyDefinitions\en-US"
 
-Import-Module ADMPwd.ps
-Update-AdmPwdADSchema
-Set-AdmPwdComputerSelfPermission -OrgUnit (Get-ADDomain).distinguishedname
+try {
+    Update-LapsADSchema -ErrorAction Stop
+    Write-Host -ForegroundColor Green "INFORMATION: Windows LAPS schema updated successfully."
+}
+catch {
+    Write-Host -ForegroundColor Red "ERROR: Failed to update Windows LAPS schema. Error: $_"
+    throw
+}
+
+try {
+    $domainDN = (Get-ADDomain).DistinguishedName
+    Set-LapsADComputerSelfPermission -Identity $domainDN -ErrorAction Stop
+    Write-Host -ForegroundColor Green "INFORMATION: Windows LAPS computer self-permission set on $domainDN."
+}
+catch {
+    Write-Host -ForegroundColor Red "ERROR: Failed to set LAPS computer self-permission. Error: $_"
+    throw
+}

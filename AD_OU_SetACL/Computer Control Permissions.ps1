@@ -255,7 +255,10 @@ $groupSID = New-Object System.Security.Principal.SecurityIdentifier $objGroup.SI
 $objAcl = get-acl $objOU
 
 # The schema must be extended for LAPS
-$objAcl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule $groupSID,"ReadProperty","Allow",$guidmap["ms-Mcs-AdmPwd"],$inheritanceType,$guidmap["computer"]))
+$objAcl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule $groupSID,"ReadProperty","Allow",$guidmap["msLAPS-Password"],$inheritanceType,$guidmap["computer"]))
+$objAcl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule $groupSID,"ReadProperty","Allow",$guidmap["msLAPS-EncryptedPassword"],$inheritanceType,$guidmap["computer"]))
+$objAcl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule $groupSID,"ReadProperty","Allow",$guidmap["msLAPS-PasswordExpirationTime"],$inheritanceType,$guidmap["computer"]))
+$objAcl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule $groupSID,"ReadProperty","Allow",$guidmap["msLAPS-EncryptedPasswordHistory"],$inheritanceType,$guidmap["computer"]))
 #Added by JMN.  Need All Extended Rights on computer object to be able to Read LAPS password. LAPS password is Confidential attribute
 $objAcl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule $groupSID,"ExtendedRight","Allow",$inheritanceType,$guidmap["computer"]))
 
@@ -282,7 +285,7 @@ $groupSID = New-Object System.Security.Principal.SecurityIdentifier $objGroup.SI
 $objAcl = get-acl $objOU
 
 # The schema must be extended for LAPS
-$objAcl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule $groupSID,"WriteProperty,ReadProperty","Allow",$guidmap["ms-Mcs-AdmPwdExpirationTime"],$inheritanceType,$guidmap["computer"]))
+$objAcl.AddAccessRule((New-Object System.DirectoryServices.ActiveDirectoryAccessRule $groupSID,"WriteProperty,ReadProperty","Allow",$guidmap["msLAPS-PasswordExpirationTime"],$inheritanceType,$guidmap["computer"]))
 
 try
 {
