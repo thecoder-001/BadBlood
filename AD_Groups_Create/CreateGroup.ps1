@@ -109,7 +109,8 @@ Function CreateGroup {
 
         $Groupnameprefix = ''
         $Groupnameprefix = ($ownerinfo.samaccountname).substring(0,2) 
-        $application = try{(get-content($groupscriptPath + '\hotmail.txt')|get-random).substring(0,9)} catch{(get-content($groupscriptPath + '\hotmail.txt')|get-random).substring(0,3) }
+        $appRaw = (get-content($groupscriptPath + '\hotmail.txt')|get-random)
+        $application = $appRaw.substring(0, [Math]::Min($appRaw.Length, 9))
         $functionint = 1..100|Get-random  
         if($functionint -le 25){$function = 'admingroup'}else{$function = 'distlist'}              
         $GroupNameFull = $Groupnameprefix + '-'+$Application+ '-'+$Function
